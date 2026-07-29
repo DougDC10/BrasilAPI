@@ -45,7 +45,67 @@
         }
       }
     },
-    "/cambio/v1/cotacao/{moeda}/{data}": {
+    "/cambio/v1/cotacao/{moeda}/{data}","/cambio/v1/periodo/{moeda}/{dataInicial}/{dataFinal}": {
+  "get": {
+    "tags": ["CAMBIO"],
+    "summary": "Busca o histórico de câmbio do Real com outra moeda, em um período",
+    "description": "Consulta o histórico de cotações PTAX da moeda desejada em relação ao Real, entre uma data inicial e uma data final. Intervalo máximo permitido: 90 dias.",
+    "parameters": [
+      {
+        "name": "moeda",
+        "description": "A moeda alvo desejada (AUD, CAD, CHF, DKK, EUR, GBP, JPY, SEK, USD). Para maiores informações, consulte: <a href=\"#tag/CAMBIO/paths/~1cambio~1v1~1moedas/get\">/cambio/v1/moedas</a>",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      {
+        "name": "dataInicial",
+        "description": "Data inicial do período, no formato YYYY-MM-DD. Os dados só estão disponíveis a partir de 28/11/1984.",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      {
+        "name": "dataFinal",
+        "description": "Data final do período, no formato YYYY-MM-DD. Não pode ser uma data futura e o intervalo entre dataInicial e dataFinal não pode exceder 90 dias.",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Success",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/CambioPeriodoRetorno" }
+          }
+        }
+      },
+      "400": {
+        "description": "Parâmetros inválidos (datas, moeda ou intervalo fora do permitido)",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorMessage" },
+            "example": {
+              "name": "BadRequestError",
+              "message": "O intervalo máximo permitido é de 90 dias",
+              "type": "range_error"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Nenhuma cotação encontrada para o período informado",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorMessage" }
+          }
+        }
+      }
+    }
+  }
+}: {
       "get": {
         "tags": [
           "CAMBIO"
